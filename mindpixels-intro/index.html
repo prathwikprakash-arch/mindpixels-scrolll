@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xminds — Intro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #050505;
+    --bg-soft: #050505;
+    --fg: #f4f1ea;
+    --muted: #8b8d91;
+    --line: #232326;
+    --accent: #e2a23b;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ background:var(--bg); scroll-behavior:auto; }
+
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Manrope', sans-serif;
+    font-weight:400;
+    overflow-x:hidden;
+  }
+  body.embedded{ overflow:hidden; }
+
+  ::selection{ background:var(--accent); color:#141414; }
+
+  /* ---------- Loader ---------- */
+  #loader{
+    position:fixed; inset:0; z-index:100;
+    background:var(--bg);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px;
+    transition:opacity .6s ease, visibility .6s ease;
+  }
+  #loader.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+  .loader-mark{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:1.4rem;
+    letter-spacing:.02em;
+    color:var(--muted);
+  }
+  .loader-track{
+    width:160px; height:1px; background:var(--line); position:relative; overflow:hidden;
+  }
+  .loader-fill{
+    position:absolute; left:0; top:0; height:100%; width:0%;
+    background:var(--fg);
+    transition:width .15s ease-out;
+  }
+
+  /* ---------- Top nav ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:32px 40px;
+    mix-blend-mode:difference;
+  }
+  body.embedded header,
+  body.embedded .progress-rail{ display:none; }
+  .wordmark{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:1.05rem;
+    color:var(--fg);
+    letter-spacing:.01em;
+  }
+  .nav-meta{
+    font-size:.72rem;
+    letter-spacing:.06em;
+    color:var(--fg);
+    opacity:.55;
+    font-weight:500;
+  }
+
+  /* ---------- Intro scroll section ---------- */
+  .intro-scroll{
+    position:relative;
+    height:600vh; /* scroll distance controlling the sequence */
+    height:600svh; /* stable viewport unit — avoids mobile address-bar jumps */
+  }
+
+  .stage{
+    position:sticky;
+    top:0;
+    height:100vh;
+    height:100svh;
+    height:100dvh;
+    width:100%;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(120% 90% at 50% 42%, var(--bg-soft) 0%, var(--bg) 62%);
+  }
+
+  #frameCanvas{
+    position:absolute;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    z-index:2;
+  }
+
+  .stage-copy{
+    position:relative;
+    z-index:5;
+    text-align:center;
+    pointer-events:none;
+    padding:0 20px;
+  }
+
+  #stageCopyIn{
+    z-index:1;
+  }
+
+  /* Let the headset sequence sit in front of the closing headline. */
+  #stageCopyOut{
+    z-index:1;
+  }
+
+  .stage-copy .eyebrow-line{
+    font-size:.72rem;
+    letter-spacing:.06em;
+    color:var(--muted);
+    font-weight:500;
+    transition:opacity .4s ease, transform .4s ease;
+  }
+
+  .stage-copy h1{
+    font-family:'Fraunces', serif;
+    font-weight:300;
+    font-size:clamp(2.2rem, 6vw, 4.6rem);
+    line-height:1.05;
+    margin-top:18px;
+    color:var(--fg);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+
+  .stage-copy h1 em{
+    font-style:italic;
+    font-weight:500;
+    color:var(--fg);
+  }
+
+  .scroll-cue{
+    position:absolute;
+    bottom:44px; left:50%;
+    transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    z-index:5;
+    transition:opacity .4s ease;
+  }
+  .scroll-cue span{
+    font-size:.68rem;
+    letter-spacing:.08em;
+    color:var(--muted);
+  }
+  .scroll-cue .stick{
+    width:1px; height:34px;
+    background:linear-gradient(var(--muted), transparent);
+    position:relative;
+    overflow:hidden;
+  }
+  .scroll-cue .stick::after{
+    content:'';
+    position:absolute; left:0; top:0; width:100%; height:40%;
+    background:var(--fg);
+    animation:travel 1.8s ease-in-out infinite;
+  }
+  @keyframes travel{
+    0%{ transform:translateY(-100%); }
+    100%{ transform:translateY(250%); }
+  }
+
+  .progress-rail{
+    position:fixed;
+    right:36px; top:50%;
+    transform:translateY(-50%);
+    height:120px; width:1px;
+    background:var(--line);
+    z-index:20;
+    opacity:0;
+    transition:opacity .4s ease;
+  }
+  .progress-rail.visible{ opacity:1; }
+  .progress-rail .fill{
+    position:absolute; left:0; top:0; width:100%; height:0%;
+    background:var(--accent);
+  }
+
+  /* ---------- Closing / next section ---------- */
+  .closing{
+    position:relative;
+    min-height:100vh;
+    min-height:100svh;
+    min-height:100dvh;
+    display:flex;
+    align-items:center;
+    padding:0 40px;
+    background:var(--bg);
+    border-top:1px solid var(--line);
+  }
+
+  .closing-inner{
+    max-width:760px;
+    margin:0 auto;
+    width:100%;
+  }
+
+  .closing-inner .kicker{
+    font-size:.72rem;
+    letter-spacing:.06em;
+    color:var(--muted);
+    font-weight:500;
+    margin-bottom:22px;
+  }
+
+  .closing-inner h2{
+    font-family:'Fraunces', serif;
+    font-weight:300;
+    font-size:clamp(1.9rem, 4.2vw, 3.1rem);
+    line-height:1.18;
+    max-width:15ch;
+  }
+
+  .closing-inner h2 em{
+    font-style:italic;
+    font-weight:500;
+  }
+
+  .closing-inner p{
+    margin-top:26px;
+    max-width:46ch;
+    color:var(--muted);
+    font-size:1rem;
+    line-height:1.7;
+    font-weight:300;
+  }
+
+  .enter-link{
+    margin-top:44px;
+    display:inline-flex;
+    align-items:center;
+    gap:14px;
+    font-size:.95rem;
+    color:var(--fg);
+    text-decoration:none;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--line);
+    transition:border-color .3s ease, gap .3s ease;
+  }
+  .enter-link:hover{
+    border-color:var(--fg);
+    gap:20px;
+  }
+  .enter-link .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--accent);
+    flex-shrink:0;
+  }
+
+  footer{
+    padding:28px 40px 40px;
+    display:flex;
+    justify-content:space-between;
+    font-size:.72rem;
+    letter-spacing:.04em;
+    color:var(--muted);
+  }
+
+  @media (max-width:900px){
+    header{ padding:18px 20px; }
+    .wordmark{ font-size:.92rem; }
+    .nav-meta{ font-size:.62rem; }
+    .stage-copy{ padding:0 28px; }
+    .stage{ height:100svh; height:100dvh; }
+    .stage-copy .eyebrow-line{ font-size:.66rem; }
+    .stage-copy h1{ font-size:clamp(1.6rem, 7.4vw, 2.4rem); margin-top:14px; }
+    .scroll-cue{ bottom:30px; }
+    .closing{ padding:0 22px; min-height:80vh; }
+    .closing-inner .kicker{ margin-bottom:16px; }
+    .closing-inner h2{ max-width:100%; }
+    .closing-inner p{ max-width:100%; margin-top:18px; }
+    .enter-link{ margin-top:34px; }
+    footer{ padding:20px 22px 30px; flex-direction:column; gap:8px; }
+    .progress-rail{ right:14px; height:80px; }
+  }
+
+  @media (max-width:380px){
+    .stage-copy h1{ font-size:clamp(1.35rem, 7.8vw, 2rem); }
+    .nav-meta{ display:none; }
+  }
+
+  @media (max-width:900px) and (orientation:landscape){
+    .stage-copy h1{ font-size:clamp(1.2rem, 5vw, 1.8rem); margin-top:8px; }
+    .scroll-cue{ bottom:16px; }
+    header{ padding:14px 20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .scroll-cue .stick::after{ animation:none; }
+    *{ transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div id="loader">
+    <div class="loader-mark">Xminds</div>
+    <div class="loader-track"><div class="loader-fill" id="loaderFill"></div></div>
+  </div>
+
+  <header>
+    <div class="wordmark">Xminds</div>
+    <div class="nav-meta">Virtual Reality &nbsp;— &nbsp;Redefined</div>
+  </header>
+
+  <div class="progress-rail" id="progressRail"><div class="fill" id="progressFill"></div></div>
+
+  <section class="intro-scroll" id="introScroll">
+    <div class="stage">
+      <canvas id="frameCanvas"></canvas>
+
+      <div class="stage-copy" id="stageCopyIn">
+        <div class="eyebrow-line">Beyond the classroom.</div>
+        <h1>Step Into the Lab<br>of <em>Tomorrow.</em></h1>
+      </div>
+
+      <div class="stage-copy" id="stageCopyOut" style="position:absolute; opacity:0;">
+        <div class="eyebrow-line">NEXT-GEN LEARNING</div>
+        <h1>We don't replace labs.<br>We extend <em>reality.</em></h1>
+      </div>
+
+      <div class="scroll-cue" id="scrollCue">
+        <span>Scroll</span>
+        <div class="stick"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="closing-inner">
+      <div class="kicker">Xminds</div>
+      <h2>We build the hardware and software behind <em>believable</em> virtual worlds.</h2>
+      <p>From optics to interface, every part of the headset is designed in-house — so the experience feels seamless the moment you put it on.</p>
+      <a class="enter-link" href="#"><span class="dot"></span> Explore the headset</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Xminds</span>
+    <span>Virtual Reality Company</span>
+  </footer>
+
+<script>
+(function(){
+  var FRAME_COUNT = 91;
+  var FRAME_PATH = function(i){
+    return 'frames/frame_' + String(i).padStart(4,'0') + '.webp';
+  };
+
+  /* ============================================================
+     TEXT TIMING — edit these to control exactly when EACH of the
+     two headline blocks fades in/out while scrolling. They are
+     fully independent of each other and of the frame animation.
+
+     Every value is a scroll progress from 0 (top of the intro)
+     to 1 (bottom of the intro, frame 105).
+
+     fadeInStart  → opacity starts rising from 0
+     fadeInEnd    → opacity reaches 1 (fully visible)
+     holdEnd      → stays fully visible until this point
+     fadeOutEnd   → opacity reaches 0 again
+  ============================================================ */
+  var TEXT_TIMING = {
+    // controls <div id="stageCopyIn">  →  "Beyond the classroom. / Step Into the Lab of Tomorrow."
+    stageCopyIn:  { fadeInStart: -0.001, fadeInEnd: 0, holdEnd: 0.22, fadeOutEnd: 0.25 },
+
+    // controls <div id="stageCopyOut"> →  "NEXT-GEN LEARNING / We don't replace labs. We extend reality."
+    stageCopyOut: { fadeInStart: 0.67, fadeInEnd: 0.79, holdEnd: 1, fadeOutEnd: 1.01 }
+  };
+  var FRAME_SEQUENCE_END = 0.84;
+  // Scroll-cue ("Scroll" hint) fade-out window
+  var SCROLL_CUE_FADE_END = 0.06;
+
+  var canvas = document.getElementById('frameCanvas');
+  var ctx = canvas.getContext('2d');
+  var images = new Array(FRAME_COUNT);
+  var loadedCount = 0;
+
+  var loader = document.getElementById('loader');
+  var loaderFill = document.getElementById('loaderFill');
+  var introScroll = document.getElementById('introScroll');
+  var progressRail = document.getElementById('progressRail');
+  var progressFill = document.getElementById('progressFill');
+  var scrollCue = document.getElementById('scrollCue');
+  var copyIn = document.getElementById('stageCopyIn');
+  var copyOut = document.getElementById('stageCopyOut');
+
+  var currentFrame = 1;
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var viewportH = window.innerHeight;
+
+  function getViewportSize(){
+    var contentWidth = Math.max(document.documentElement.clientWidth, 1);
+    // visualViewport is more reliable on mobile (address bar show/hide,
+    // pinch-zoom) than window.innerWidth/Height alone.
+    if(window.visualViewport){
+      return { w: contentWidth, h: Math.max(window.visualViewport.height, 1) };
+    }
+    return { w: contentWidth, h: Math.max(window.innerHeight, 1) };
+  }
+
+  function resizeCanvas(){
+    var size = getViewportSize();
+    viewportH = size.h;
+    canvas.width = size.w * dpr;
+    canvas.height = size.h * dpr;
+    canvas.style.width = size.w + 'px';
+    canvas.style.height = size.h + 'px';
+    drawFrame(currentFrame, true);
+  }
+
+  /* The headset itself sits slightly left of the exact horizontal center
+     of the source frames. On narrow (portrait) screens the cover crop
+     has to cut a lot off both sides, so a plain center-crop makes the
+     headset read as off-center to the left.
+
+     FOCAL_X shifts which point of the source frame lands at the middle
+     of the screen: 0.5 = true image center (old behavior), lower values
+     shift the crop to the right (moving the headset right on screen),
+     higher values shift it left. Nudge this if it ever drifts again. */
+  var FOCAL_X = 0.47;
+
+  function drawFrame(index, force){
+    var img = images[index - 1];
+    if(!img || (!force && index === currentFrame)) { currentFrame = index; return; }
+    currentFrame = index;
+
+    var cw = canvas.width, ch = canvas.height;
+    ctx.clearRect(0, 0, cw, ch);
+
+    var iw = img.width, ih = img.height;
+
+    // Always fill the full screen edge-to-edge (cover crop) on every
+    // device — phone, tablet, or desktop — rather than letterboxing.
+    var size = getViewportSize();
+    var scale = Math.max(cw / iw, ch / ih);
+    var dw = iw * scale, dh = ih * scale;
+    var dy = (ch - dh) / 2;
+    var dx = cw / 2 - FOCAL_X * dw;
+    dx = Math.min(0, Math.max(cw - dw, dx)); // never reveal empty space past the image edges
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+
+  function preload(){
+    var CONCURRENCY = 10;   // parallel requests in flight at once
+    var MAX_RETRIES = 2;    // retries for a frame that fails to load
+    var next = 1;
+    var active = 0;
+
+    function pump(){
+      while(active < CONCURRENCY && next <= FRAME_COUNT){
+        loadOne(next);
+        next++;
+      }
+    }
+
+    function loadOne(idx){
+      active++;
+      var attempts = 0;
+      function attempt(){
+        var img = new Image();
+        img.onload = function(){
+          images[idx - 1] = img;
+          finish();
+        };
+        img.onerror = function(){
+          attempts++;
+          if(attempts <= MAX_RETRIES){
+            setTimeout(attempt, 300 * attempts);
+          } else {
+            // Give up on this single frame after retries so the page never
+            // hangs — drawFrame() below holds the last good frame instead
+            // of going blank when one is missing.
+            finish();
+          }
+        };
+        img.src = FRAME_PATH(idx) + (attempts ? ('?r=' + attempts) : '');
+      }
+      function finish(){
+        loadedCount++;
+        var pct = Math.round((loadedCount / FRAME_COUNT) * 100);
+        loaderFill.style.width = pct + '%';
+        window.parent.postMessage({ type:'load-progress', loaded:loadedCount, total:FRAME_COUNT }, '*');
+        active--;
+        if(loadedCount === FRAME_COUNT){
+          onAllLoaded();
+        } else {
+          pump();
+        }
+      }
+      attempt();
+    }
+
+    pump();
+  }
+
+  function onAllLoaded(){
+    resizeCanvas();
+    drawFrame(1, true);
+    window.parent.postMessage({ type:'frames-loaded' }, '*');
+    setTimeout(function(){
+      loader.classList.add('hidden');
+    }, 200);
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+  }
+
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+  // Trapezoid fade: 0 → 1 → 1 → 0 across the four TEXT_TIMING points.
+  function fadeOpacity(progress, cfg){
+    if(progress <= cfg.fadeInStart || progress >= cfg.fadeOutEnd) return 0;
+    if(progress < cfg.fadeInEnd){
+      return (progress - cfg.fadeInStart) / (cfg.fadeInEnd - cfg.fadeInStart);
+    }
+    if(progress > cfg.holdEnd){
+      return 1 - (progress - cfg.holdEnd) / (cfg.fadeOutEnd - cfg.holdEnd);
+    }
+    return 1;
+  }
+
+  function onScroll(forcedProgress){
+    var rect = introScroll.getBoundingClientRect();
+    var scrollable = introScroll.offsetHeight - viewportH;
+    var scrolled = -rect.top;
+    var progress = typeof forcedProgress === 'number'
+      ? clamp(forcedProgress, 0, 1)
+      : clamp(scrolled / scrollable, 0, 1);
+
+    var frameProgress = clamp(progress / FRAME_SEQUENCE_END, 0, 1);
+    var frameIndex = Math.round(1 + frameProgress * (FRAME_COUNT - 1));
+    frameIndex = clamp(frameIndex, 1, FRAME_COUNT);
+    drawFrame(frameIndex);
+
+    // progress rail
+    if(progress > 0.02 && progress < 0.99){
+      progressRail.classList.add('visible');
+    } else {
+      progressRail.classList.remove('visible');
+    }
+    progressFill.style.height = (progress * 100) + '%';
+
+    // scroll cue fades out early
+    scrollCue.style.opacity = progress < SCROLL_CUE_FADE_END
+      ? (1 - progress / SCROLL_CUE_FADE_END)
+      : 0;
+
+    // headline fades — each block's timing is set independently in TEXT_TIMING above
+    var inOpacity = fadeOpacity(progress, TEXT_TIMING.stageCopyIn);
+    copyIn.style.opacity = inOpacity;
+    copyIn.style.transform = 'translateY(' + (1 - inOpacity) * 12 + 'px)';
+
+    var outOpacity = fadeOpacity(progress, TEXT_TIMING.stageCopyOut);
+    copyOut.style.opacity = outOpacity;
+    copyOut.style.transform = 'translateY(' + (1 - outOpacity) * 12 + 'px)';
+    copyOut.style.zIndex = progress >= FRAME_SEQUENCE_END ? 5 : 1;
+  }
+
+  window.addEventListener('message', function(event){
+    if(event.data && event.data.type === 'scroll-progress'){
+      document.body.classList.add('embedded');
+      onScroll(event.data.progress);
+    }
+  });
+
+  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('orientationchange', function(){
+    setTimeout(resizeCanvas, 120);
+  });
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', resizeCanvas);
+  }
+  preload();
+})();
+</script>
+
+</body>
+</html>
