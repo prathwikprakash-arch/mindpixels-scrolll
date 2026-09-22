@@ -58,13 +58,45 @@
     .project-closing h2 { margin:0; font:300 clamp(2rem,5vw,4rem)/1.08 "Fraunces",serif; }
     .project-closing h2 em { font-weight:500; }
     .project-closing p { max-width:560px; margin:28px 0 0; color:var(--muted); font-size:.92rem; line-height:1.8; }
-    footer { display:flex; justify-content:space-between; padding:28px 40px; border-top:1px solid var(--line); color:var(--muted); font-size:.68rem; letter-spacing:.06em; }
+    .afterword { border-top:1px solid var(--line); }
+    .icon-section, .video-section, .contact-section { max-width:1160px; margin:0 auto; padding:clamp(88px,12vw,160px) 40px; }
+    .icon-section { padding-top:42px; }
+    .technology-title { margin:0 0 34px; text-align:center; font:300 clamp(1.8rem,4vw,3.2rem)/1.1 "Fraunces",serif; }
+    .technology-title em { font-weight:500; }
+    .icon-grid { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:clamp(18px,3vw,42px); }
+    .icon-card { display:flex; align-items:center; justify-content:center; width:clamp(110px,14vw,170px); height:clamp(110px,14vw,170px); transition:transform .3s ease; }
+    .icon-card:hover { transform:translateY(-8px) scale(1.04); }
+    .icon-card img { width:100%; height:100%; object-fit:contain; }
+    .video-section { padding-top:0; }
+    .video-shell { position:relative; overflow:hidden; aspect-ratio:16/9; margin-top:52px; border:1px solid var(--line); background:#050505; box-shadow:0 24px 80px rgba(0,0,0,.35); }
+    .video-shell iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+    .contact-section { display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,1fr); gap:clamp(50px,9vw,120px); border-top:1px solid var(--line); }
+    .contact-visual { position:relative; min-height:500px; display:flex; align-items:flex-end; overflow:hidden; padding:34px; background:#050505; border:1px solid var(--line); isolation:isolate; }
+    .contact-visual::before { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,rgba(5,5,5,.05) 15%,rgba(5,5,5,.92) 100%),url("Assts/Contact%20us%20image.png") center/cover; transition:transform .6s ease; }
+    .contact-visual:hover::before { transform:scale(1.04); }
+    .contact-visual h2 { margin:0; font:300 clamp(1.8rem,3.2vw,3.2rem)/1 "Fraunces",serif; }
+    .contact-visual h2 em { font-weight:500; }
+    .contact-form { display:grid; gap:14px; }
+    .contact-form label { color:var(--muted); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; }
+    .contact-form input, .contact-form textarea { width:100%; margin-top:8px; padding:14px 16px; border:1px solid var(--line); border-radius:2px; outline:0; background:#050505; color:var(--fg); font:400 .9rem "Manrope",sans-serif; transition:border-color .2s ease,background .2s ease; }
+    .contact-form textarea { min-height:125px; resize:vertical; }
+    .contact-form input:focus, .contact-form textarea:focus { border-color:var(--accent); background:#050505; }
+    .contact-form button { justify-self:start; width:220px; min-height:52px; margin-top:16px; padding:14px 22px; border:1px solid var(--fg); background:var(--fg); color:var(--bg); cursor:pointer; font:600 .68rem "Manrope",sans-serif; letter-spacing:.12em; text-transform:uppercase; transition:background .2s ease,color .2s ease; }
+    .contact-form button:hover { background:transparent; color:var(--fg); }
+    footer { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:28px 40px; border-top:1px solid var(--line); color:var(--muted); font-size:.68rem; letter-spacing:.06em; }
+    footer strong { color:var(--fg); font:italic 1rem "Fraunces",serif; font-weight:400; }
     @media (max-width:900px) {
       .project-frame { height:100svh; height:100dvh; }
       .site-nav { padding:22px 20px; }
       .site-nav span { display:none; }
       .project-closing { padding:0 20px; }
+      .icon-section, .video-section, .contact-section { padding-left:20px; padding-right:20px; }
+      .contact-section { grid-template-columns:1fr; }
       footer { padding:24px 20px; }
+    }
+    @media (max-width:560px) {
+      .contact-visual { min-height:360px; }
+      footer { align-items:flex-start; flex-direction:column; }
     }
   </style>
 </head>
@@ -122,9 +154,42 @@
         </div>
       </div>
     </section>
+
+    <section class="afterword" aria-label="More about Xminds">
+      <div class="icon-section">
+        <h2 class="technology-title">Technologies <em>used</em></h2>
+        <div class="icon-grid">
+          <div class="icon-card"><img src="Assts/Frame%201.png" alt="Immersive learning"></div>
+          <div class="icon-card"><img src="Assts/Frame%202.png" alt="Connected systems"></div>
+          <div class="icon-card"><img src="Assts/Frame%203.png" alt="Real-time insights"></div>
+          <div class="icon-card"><img src="Assts/Frame%204.png" alt="Built for scale"></div>
+          <div class="icon-card"><img src="Assts/Frame%205.png" alt="Human-centered design"></div>
+        </div>
+      </div>
+
+      <div class="video-section">
+        <p class="section-kicker">See it in motion</p>
+        <h2 class="section-heading">The future is better when you can <em>step inside it.</em></h2>
+        <div class="video-shell">
+          <iframe src="https://www.youtube.com/embed/u14MgiuqDUE?rel=0" title="Xminds immersive experience" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <div class="contact-section">
+        <div class="contact-visual" role="img" aria-label="Virtual reality experience">
+          <h2>Let’s make something <em>real.</em></h2>
+        </div>
+        <form class="contact-form" action="#" method="post">
+          <label for="name">Your name<input id="name" name="name" type="text" autocomplete="name" required></label>
+          <label for="email">Email address<input id="email" name="email" type="email" autocomplete="email" required></label>
+          <label for="message">How can we help?<textarea id="message" name="message" required></textarea></label>
+          <button type="submit">Send enquiry</button>
+        </form>
+      </div>
+    </section>
   </main>
 
-  <footer><span>© 2026 Xminds</span><span>Virtual Reality Company</span></footer>
+  <footer><strong>Xminds</strong><span>© 2026 Xminds</span><span>Virtual Reality Company</span></footer>
 
   <script>
     (function () {
